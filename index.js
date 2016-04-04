@@ -3,7 +3,8 @@
 const safe = require('safeclient')
 const fs = require('fs')
 const readline = require('readline')
-const messagePath = '/'
+const messagePath = '/safe-chat-cli/'
+const share = true
 
 let conf = {}
 let alias
@@ -29,12 +30,25 @@ let p = safe.ensureAuthed(client, {
     id: "infining.safe-chat-cli.safe",
     version: "0.0.1",
     vendor: "infining"
-  }
+  },
+  permissions: ['SAFE_DRIVE_ACCESS']
 })
 
 // Save configuration file if first run
 p = p.then(() => {
   if (conf === null) fs.writeFileSync('./conf',safe.marshalConf(client.conf))
+})
+
+p = p.then(() => {
+  safe.nfs.getDir(client, {
+    dirPath: messagePath,
+    isPathShared: share
+  }).catch(() => {
+    safe.nfs.createDir(client, {
+      dirPath: messagePath,
+      isPathShared: share
+    })
+  })
 })
 
 // Create user alias
@@ -60,13 +74,14 @@ function repeat(func) {
 function safeDirScan() {
   let newFiles = []
   return safe.nfs.getDir(client, {
-    dirPath: messagePath
+    dirPath: messagePath,
+    isPathShared: share
   })
   .then((dir) => {
     newFiles = dir.files.filter((file) => ((file.createdOn >= sTime) && (seenFiles.indexOf(file.name) === -1)))
     newFiles.forEach((file) => {
       seenFiles.push(file.name)
-      safe.nfs.getFile(client, {filePath: messagePath+file.name}).then((fileBuf) => {console_out('(<'+JSON.parse(fileBuf).alias+'>): '+JSON.parse(fileBuf).message)})
+      safe.nfs.getFile(client, {filePath: messagePath+file.name, isPathShared: share}).then((fileBuf) => {console_out('(<'+JSON.parse(fileBuf).alias+'>): '+JSON.parse(fileBuf).message)})
     })
   }).catch(console_out)
 }
@@ -76,11 +91,13 @@ rl.on('line', (message) => {
     let time = Date.now().toString()
     let file = alias+'_'+time
     safe.nfs.createFile(client, {
-      filePath: file, // filename is time of message sent
+      filePath: messagePath+file, // filename is time of message sent
+      isPathShared: share
     })
     .then(() => {
       safe.nfs.writeFile(client, {
         filePath: messagePath+file,
+        isPathShared: share,
         contents: JSON.stringify({'alias':alias,'time':time,'message':message}) // contents are alias, time, and message
       })
     })
