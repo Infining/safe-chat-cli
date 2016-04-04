@@ -4,7 +4,8 @@ const safe = require('safeclient')
 const fs = require('fs')
 const readline = require('readline')
 const messagePath = '/safe-chat-cli/'
-const share = true
+const share = false
+const privateSelect = false
 
 let conf = {}
 let alias
@@ -47,7 +48,7 @@ p = p.then(() => {
     safe.nfs.createDir(client, {
       dirPath: messagePath,
       isPathShared: share,
-      isPrivate: false
+      isPrivate: privateSelect
     })
   })
 })
@@ -99,7 +100,7 @@ rl.on('line', (message) => {
       safe.nfs.writeFile(client, {
         filePath: messagePath+file,
         isPathShared: share,
-        isPrivate: false,
+        isPrivate: privateSelect,
         contents: JSON.stringify({'alias':alias,'time':time,'message':message}) // contents are alias, time, and message
       })
     })
