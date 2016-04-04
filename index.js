@@ -46,7 +46,8 @@ p = p.then(() => {
   }).catch(() => {
     safe.nfs.createDir(client, {
       dirPath: messagePath,
-      isPathShared: share
+      isPathShared: share,
+      isPrivate: false
     })
   })
 })
@@ -98,6 +99,7 @@ rl.on('line', (message) => {
       safe.nfs.writeFile(client, {
         filePath: messagePath+file,
         isPathShared: share,
+        isPrivate: false,
         contents: JSON.stringify({'alias':alias,'time':time,'message':message}) // contents are alias, time, and message
       })
     })
