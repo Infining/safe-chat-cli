@@ -1,0 +1,25 @@
+{
+  "name": "safe-chat-cli",
+  "version": "0.0.1",
+  "description": "SAFE network cli chat utility",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Infining/safe-chat-cli.git"
+  },
+  "author": "infining",
+  "dependencies": {
+    "safeclient": "latest",
+    "readline": "latest",
+    "fs": "latest"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Infining/safe-chat-cli/issues"
+  },
+  "homepage": "https://github.com/Infining/safe-chat-cli#readme"
+}
